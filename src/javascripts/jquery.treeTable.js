@@ -53,7 +53,9 @@
     onNodeHide: null,
     treeColumn: 0,
     persist: false,
-    persistCookiePrefix: 'treeTable_'
+    persistCookiePrefix: 'treeTable_',
+	always_add_expander: true,
+	fix_expander_ident: true
   };
 
   // Recursively hide all node's children in a tree
@@ -194,16 +196,21 @@
         node.addClass("parent");
       }
 
-      if(node.hasClass("parent")) {
+      if(options.always_add_expander || node.hasClass("parent")) {
         var cell = $(node.children("td")[options.treeColumn]);
         var padding = getPaddingLeft(cell) + options.indent;
-
-        childNodes.each(function() {
-          $(this).children("td")[options.treeColumn].style.paddingLeft = padding + "px";
-        });
+		
+		if (node.hasClass("parent")) {
+			childNodes.each(function(){
+				$(this).children("td")[options.treeColumn].style.paddingLeft = padding + "px";
+			});
+		}
 
         if(options.expandable) {
-          cell.prepend('<span style="margin-left: -' + options.indent + 'px; padding-left: ' + options.indent + 'px" class="expander"></span>');
+		  expander_style = ''
+		  if (options.fix_expander_ident)
+		  	expander_style = ' style="margin-left: -' + options.indent + 'px; padding-left: ' + options.indent + 'px"';
+          cell.prepend('<span'+ expander_style +' class="expander"></span>');
           $(cell[0].firstChild).click(function() { node.toggleBranch(); });
 
           if(options.clickableNodeNames) {
@@ -216,7 +223,7 @@
             });
           }
 
-          if (options.persist) {
+          if (node.hasClass("parent") && options.persist) {
             var cookieName = options.persistCookiePrefix + node.attr('id');
             if ($.cookie(cookieName) == 'true') {
               node.addClass('expanded');
