@@ -211,33 +211,38 @@
 		  if (options.fix_expander_ident)
 		  	expander_style = ' style="margin-left: -' + options.indent + 'px; padding-left: ' + options.indent + 'px"';
           cell.prepend('<span'+ expander_style +' class="expander"></span>');
-          $(cell[0].firstChild).click(function() { node.toggleBranch(); });
+		  
+		  if (node.hasClass("parent")) {
+		  	$(cell[0].firstChild).click(function(){
+		  		node.toggleBranch();
+		  	});
+		  	
+		  	if (options.clickableNodeNames) {
+		  		cell[0].style.cursor = "pointer";
+		  		$(cell).click(function(e){
+		  			// Don't double-toggle if the click is on the existing expander icon
+					if (e.target.className != 'expander') {
+						node.toggleBranch();
+					}
+				});
+			}
 
-          if(options.clickableNodeNames) {
-            cell[0].style.cursor = "pointer";
-            $(cell).click(function(e) {
-              // Don't double-toggle if the click is on the existing expander icon
-              if (e.target.className != 'expander') {
-                node.toggleBranch();
-              }
-            });
-          }
-
-          if (node.hasClass("parent") && options.persist) {
-            var cookieName = options.persistCookiePrefix + node.attr('id');
-            if ($.cookie(cookieName) == 'true') {
-              node.addClass('expanded');
-            }
-          }
-
-          // Check for a class set explicitly by the user, otherwise set the default class
-          if(!(node.hasClass("expanded") || node.hasClass("collapsed"))) {
-            node.addClass(options.initialState);
-          }
-
-          if(node.hasClass("expanded")) {
-            node.expand();
-          }
+			if (options.persist) {
+				var cookieName = options.persistCookiePrefix + node.attr('id');
+				if ($.cookie(cookieName) == 'true') {
+					node.addClass('expanded');
+				}
+			}
+					
+			// Check for a class set explicitly by the user, otherwise set the default class
+			if (!(node.hasClass("expanded") || node.hasClass("collapsed"))) {
+				node.addClass(options.initialState);
+			}
+					
+			if (node.hasClass("expanded")) {
+				node.expand();
+			}
+		  }
         }
       }
     }
