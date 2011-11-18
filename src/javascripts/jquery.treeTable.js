@@ -55,7 +55,8 @@
     persist: false,
     persistCookiePrefix: 'treeTable_',
 	always_add_expander: true,
-	fix_expander_ident: true
+	fix_expander_ident: true,
+	onCollapse: null
   };
 
   // Recursively hide all node's children in a tree
@@ -81,6 +82,10 @@
   // Recursively show all node's children in a tree
   $.fn.expand = function() {
     $(this).removeClass("collapsed").addClass("expanded");
+
+    if($.isFunction(options.onCollapse)) {
+      options.onCollapse($(this));
+    }
 
     childrenOf($(this)).each(function() {
       initialize($(this));
@@ -126,11 +131,12 @@
     if($.inArray(node[0].id, ancestorNames) == -1 && (!parent || (destination.id != parent[0].id)) && destination.id != node[0].id) {
       indent(node, ancestorsOf(node).length * options.indent * -1); // Remove indentation
 
-      if(parent) { node.removeClass(options.childPrefix + parent[0].id); }
+      if(parent) { node.removeClass(options.childPrefix + parent.attr("id")); }
 
-      node.addClass(options.childPrefix + destination.id);
+      node.addClass(options.childPrefix + destination.attr('id'));
       move(node, destination); // Recursively move nodes to new location
       indent(node, ancestorsOf(node).length * options.indent);
+      initialize(node);
     }
 
     return this;
