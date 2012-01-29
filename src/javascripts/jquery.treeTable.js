@@ -56,7 +56,7 @@
     persistCookiePrefix: 'treeTable_',
 	always_add_expander: true,
 	fix_expander_ident: true,
-	onCollapse: null
+	onExpand: null
   };
 
   // Recursively hide all node's children in a tree
@@ -83,8 +83,8 @@
   $.fn.expand = function() {
     $(this).removeClass("collapsed").addClass("expanded");
 
-    if($.isFunction(options.onCollapse)) {
-      options.onCollapse($(this));
+    if($.isFunction(options.onExpand)) {
+      options.onExpand($(this));
     }
 
     childrenOf($(this)).each(function() {
